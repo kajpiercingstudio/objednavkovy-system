@@ -127,7 +127,6 @@
         html += '<div class="service-card' + (isSelected ? ' selected' : '') + '" onclick="toggleService(\'' + s.nazov + '\')">';
         html += '<img src="' + imgUrl + '" alt="' + s.nazov + '">';
         html += '<div class="service-info"><div class="service-name">' + s.nazov + ' — ' + s.cena + '€</div>';
-        html += '<div class="service-meta">' + s.trvanie + ' min</div></div>';
         html += '<div class="service-toggle">' + (isSelected ? '✓' : '+') + '</div>';
         html += '</div>';
       });
