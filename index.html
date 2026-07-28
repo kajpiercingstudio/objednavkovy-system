@@ -12,14 +12,10 @@
     h1 { font-size: 1.5em; text-align: center; margin-bottom: 5px; }
     .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 25px; }
     
-    /* Najbližší termín */
-    #next-slot { background: #fff3e0; border: 1px solid #ffb74d; border-radius: 12px; padding: 14px 18px; margin-bottom: 25px; cursor: pointer; transition: background 0.2s; }
-    #next-slot:hover { background: #ffe0b2; }
+    #next-slot { background: #fff3e0; border: 1px solid #ffb74d; border-radius: 12px; padding: 14px 18px; margin-bottom: 25px; }
     #next-slot .label { font-size: 13px; color: #666; margin-bottom: 4px; }
     #next-slot .value { font-size: 17px; font-weight: bold; color: #e65100; }
-    #next-slot .hint { font-size: 12px; color: #999; margin-top: 4px; }
     
-    /* Služby */
     .section-label { font-weight: bold; font-size: 15px; margin-top: 20px; margin-bottom: 10px; }
     .search-box { width: 100%; padding: 10px 14px; font-size: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; }
     
@@ -32,7 +28,6 @@
     .service-toggle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #ddd; flex-shrink: 0; transition: all 0.2s; }
     .service-card.selected .service-toggle { border-color: #e91e63; color: #e91e63; background: #fce4ec; }
     
-    /* Formulár */
     label { display: block; margin-top: 18px; font-weight: bold; font-size: 14px; }
     input, select, textarea { width: 100%; padding: 12px; margin-top: 6px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; background: white; }
     select:disabled { background: #f5f5f5; color: #999; }
@@ -57,10 +52,9 @@
   <p class="subtitle">Rezervácia termínu</p>
 
   <!-- Najbližší termín -->
-  <div id="next-slot" style="display:none;" onclick="selectNextSlot()">
+  <div id="next-slot" style="display:none;">
     <div class="label">Najbližší voľný termín:</div>
     <div class="value" id="next-slot-value"></div>
-    <div class="hint">Kliknutím vybrať</div>
   </div>
 
   <!-- Služby -->
@@ -147,7 +141,10 @@
       }
       renderServices(filterBySearch());
       updateDuration();
-      nacitajSloty();
+      // Ak je dátum predvyplnený, načítaj sloty
+      if (document.getElementById('datum').value) {
+        nacitajSloty();
+      }
     }
 
     function filterServices() {
@@ -198,14 +195,10 @@
           nextSlotData = data;
           document.getElementById('next-slot-value').textContent = data.datumFormatted + ' o ' + data.cas;
           document.getElementById('next-slot').style.display = 'block';
+          // Automaticky predvyplň dátum
+          document.getElementById('datum').value = data.datum;
         }
       } catch(e) {}
-    }
-
-    function selectNextSlot() {
-      if (!nextSlotData) return;
-      document.getElementById('datum').value = nextSlotData.datum;
-      nacitajSloty();
     }
 
     // ===== SLOTY =====
@@ -316,12 +309,4 @@
     function showError(msg) {
       var errorDiv = document.getElementById('error');
       errorDiv.textContent = msg;
-      errorDiv.style.display = 'block';
-    }
-
-    // ===== INIT =====
-    loadServices();
-    loadNextSlot();
-  </script>
-</body>
-</html>
+      errorDiv
