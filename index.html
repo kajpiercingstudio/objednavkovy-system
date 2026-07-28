@@ -220,6 +220,33 @@
     }
 
     // ===== NAČÍTANIE SLUŽIEB =====
+
+    async function init() {
+      var month = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
+      try {
+        var res = await fetch(API_URL + '?action=init&month=' + month);
+        var data = await res.json();
+        
+        allServices = data.services;
+        renderServices(allServices);
+        
+        if (data.nextSlot.found) {
+          nextSlotData = data.nextSlot;
+          document.getElementById('next-slot-value').textContent = data.nextSlot.datumFormatted + ' o ' + data.nextSlot.cas;
+          document.getElementById('next-slot').style.display = 'block';
+          selectedDate = data.nextSlot.datum;
+          document.getElementById('datum').value = data.nextSlot.datum;
+          var parts = data.nextSlot.datum.split('-');
+          currentMonth = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
+        }
+        
+        availableDays = data.availableDays || [];
+        renderCalendar();
+      } catch(e) {
+        document.getElementById('services-list').innerHTML = '<p style="color:#999;">Chyba pri načítaní.</p>';
+      }
+    }
+    
     async function loadServices() {
       try {
         var res = await fetch(API_URL + '?action=getServices');
@@ -429,9 +456,10 @@
     }
 
     // ===== INIT =====
-    loadServices();
-    loadNextSlot();
-    loadAvailableDays();
+    //loadServices();
+    //loadNextSlot();
+    //loadAvailableDays();
+    init();
     renderCalendar();
   </script>
 </body>
