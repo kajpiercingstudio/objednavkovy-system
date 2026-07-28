@@ -264,6 +264,9 @@
       } catch(e) {
         document.getElementById('services-list').innerHTML = '<p style="color:#999;">Chyba pri načítaní.</p>';
       }
+      // Odstráň init spinner
+      var initSpinner = document.getElementById('init-spinner');
+      if (initSpinner) initSpinner.remove();
     }
     
     async function loadServices() {
