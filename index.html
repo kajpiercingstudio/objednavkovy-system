@@ -57,10 +57,11 @@
     .calendar-day { padding: 8px 4px; border-radius: 8px; font-size: 14px; cursor: default; color: #ccc; }
     .calendar-day.available { background: #e8f5e9; color: #2e7d32; font-weight: bold; cursor: pointer; }
     .calendar-day.available:hover { background: #c8e6c9; }
-    .calendar-day.selected { background: #ffff00; color: white; font-weight: bold; }
+    .calendar-day.selected { background: #fce4ec; color: #c2185b; font-weight: bold; border: 2px solid #e91e63; }
     .calendar-day.today { border: 2px solid #ff9800; }
     .calendar-day.past { color: #e0e0e0; }
-    .calendar-loading { text-align: center; padding: 20px; color: #999; font-size: 13px; }
+    .calendar-loading { grid-column: 1 / -1; text-align: center; padding: 10px; color: #999; font-size: 24px; display: inline-block; animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -201,7 +202,7 @@
       var monthStr = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
       
       // Zobraz loading
-      document.getElementById('calendar-grid').innerHTML += '<div class="calendar-loading">Načítavam...</div>';
+      document.getElementById('calendar-grid').innerHTML += '<div class="calendar-loading">⟳</div>';
       
       try {
         var res = await fetch(API_URL + '?action=getAvailableDays&month=' + monthStr);
