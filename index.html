@@ -45,6 +45,22 @@
     .footer a { color: #999; }
     
     .duration-info { margin-top: 8px; padding: 8px 12px; background: #f3e5f5; border-radius: 8px; font-size: 13px; color: #6a1b9a; display: none; }
+
+    /* Kalendár */
+    .calendar { background: white; border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-top: 6px; }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .calendar-header button { background: none; border: none; font-size: 20px; cursor: pointer; padding: 5px 10px; border-radius: 5px; color: #555; }
+    .calendar-header button:hover { background: #f0f0f0; }
+    .calendar-title { font-weight: bold; font-size: 15px; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+    .calendar-day-name { font-size: 11px; color: #999; font-weight: bold; padding: 4px 0; }
+    .calendar-day { padding: 8px 4px; border-radius: 8px; font-size: 14px; cursor: default; color: #ccc; }
+    .calendar-day.available { background: #e8f5e9; color: #2e7d32; font-weight: bold; cursor: pointer; }
+    .calendar-day.available:hover { background: #c8e6c9; }
+    .calendar-day.selected { background: #e91e63; color: white; font-weight: bold; }
+    .calendar-day.today { border: 2px solid #ff9800; }
+    .calendar-day.past { color: #e0e0e0; }
+    .calendar-loading { text-align: center; padding: 20px; color: #999; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -53,10 +69,8 @@
 
   <!-- Najbližší termín -->
   <div id="next-slot" style="display:none;">
-    <div class="label">
-      Najbližší voľný termín:
-      <strong id="next-slot-value"></strong>
-    </div>
+    <div class="label">Najbližší voľný termín:</div>
+    <div class="value" id="next-slot-value"></div>
   </div>
 
   <!-- Služby -->
@@ -65,9 +79,17 @@
   <div id="services-list"></div>
   <div class="duration-info" id="duration-info"></div>
 
-  <!-- Dátum -->
+  <!-- Kalendár -->
   <label>Dátum</label>
-  <input type="date" id="datum">
+  <div class="calendar" id="calendar">
+    <div class="calendar-header">
+      <button onclick="changeMonth(-1)">‹</button>
+      <span class="calendar-title" id="calendar-title"></span>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="calendar-grid" id="calendar-grid"></div>
+  </div>
+  <input type="hidden" id="datum">
 
   <!-- Čas -->
   <label>Čas</label>
@@ -98,7 +120,7 @@
   <div id="result"></div>
 
   <p class="footer">
-    <a href="https://kajpiercingstudio.github.io/objednavkovy-system/gdpr.html" target="_blank">Zásady ochrany osobných údajov</a>
+    <a href="https://script.google.com/macros/s/AKfycbwXaWGf2suYDYzlsn5hB9SWOYyCZ1XjDaYBP6ZkKviFFWbyp5rw48NLmCT-sBr0mEai/exec?page=gdpr" target="_blank">Zásady ochrany osobných údajov</a>
   </p>
 
   <script>
@@ -106,6 +128,95 @@
     var allServices = [];
     var selectedServices = [];
     var nextSlotData = null;
+
+    // ===== KALENDÁR =====
+    var currentMonth = new Date();
+    currentMonth.setDate(1);
+    var availableDays = [];
+    var selectedDate = null;
+
+    var MONTH_NAMES = ['január', 'február', 'marec', 'apríl', 'máj', 'jún', 'júl', 'august', 'september', 'október', 'november', 'december'];
+    var DAY_NAMES = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
+
+    function renderCalendar() {
+      var year = currentMonth.getFullYear();
+      var month = currentMonth.getMonth();
+      
+      document.getElementById('calendar-title').textContent = MONTH_NAMES[month] + ' ' + year;
+      
+      var firstDay = new Date(year, month, 1);
+      var lastDay = new Date(year, month + 1, 0);
+      var startDay = (firstDay.getDay() + 6) % 7; // Pondelok = 0
+      
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      var html = '';
+      DAY_NAMES.forEach(function(d) {
+        html += '<div class="calendar-day-name">' + d + '</div>';
+      });
+      
+      // Prázdne bunky pred prvým dňom
+      for (var i = 0; i < startDay; i++) {
+        html += '<div class="calendar-day"></div>';
+      }
+      
+      // Dni v mesiaci
+      for (var d = 1; d <= lastDay.getDate(); d++) {
+        var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+        var dateObj = new Date(year, month, d);
+        dateObj.setHours(0, 0, 0, 0);
+        
+        var classes = 'calendar-day';
+        var isAvailable = availableDays.indexOf(dateStr) > -1;
+        var isPast = dateObj < today;
+        var isToday = dateObj.getTime() === today.getTime();
+        var isSelected = selectedDate === dateStr;
+        
+        if (isSelected) {
+          classes += ' selected';
+        } else if (isAvailable) {
+          classes += ' available';
+        } else if (isPast) {
+          classes += ' past';
+        }
+        if (isToday) classes += ' today';
+        
+        var onclick = isAvailable || isSelected ? ' onclick="selectDate(\'' + dateStr + '\')"' : '';
+        html += '<div class="' + classes + '"' + onclick + '>' + d + '</div>';
+      }
+      
+      document.getElementById('calendar-grid').innerHTML = html;
+    }
+
+    function changeMonth(dir) {
+      currentMonth.setMonth(currentMonth.getMonth() + dir);
+      renderCalendar();
+      loadAvailableDays();
+    }
+
+    async function loadAvailableDays() {
+      var monthStr = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
+      
+      try {
+        var res = await fetch(API_URL + '?action=getAvailableDays&month=' + monthStr);
+        var data = await res.json();
+        availableDays = data.days || [];
+        renderCalendar();
+      } catch(e) {
+        availableDays = [];
+        renderCalendar();
+      }
+    }
+
+    function selectDate(dateStr) {
+      selectedDate = dateStr;
+      document.getElementById('datum').value = dateStr;
+      renderCalendar();
+      if (selectedServices.length > 0) {
+        nacitajSloty();
+      }
+    }
 
     // ===== NAČÍTANIE SLUŽIEB =====
     async function loadServices() {
@@ -127,7 +238,7 @@
         html += '<div class="service-card' + (isSelected ? ' selected' : '') + '" onclick="toggleService(\'' + s.nazov + '\')">';
         html += '<img src="' + imgUrl + '" alt="' + s.nazov + '">';
         html += '<div class="service-info"><div class="service-name">' + s.nazov + ' — ' + s.cena + '€</div>';
-        html += '</div>';
+        html += '<div class="service-meta">' + s.trvanie + ' min</div></div>';
         html += '<div class="service-toggle">' + (isSelected ? '✓' : '+') + '</div>';
         html += '</div>';
       });
@@ -143,7 +254,6 @@
       }
       renderServices(filterBySearch());
       updateDuration();
-      // Ak je dátum predvyplnený, načítaj sloty
       if (document.getElementById('datum').value && selectedServices.length > 0) {
         nacitajSloty();
       }
@@ -197,19 +307,18 @@
           nextSlotData = data;
           document.getElementById('next-slot-value').textContent = data.datumFormatted + ' o ' + data.cas;
           document.getElementById('next-slot').style.display = 'block';
-          // Predvyplň dátum
+          // Predvyplň dátum a označ v kalendári
+          selectedDate = data.datum;
           document.getElementById('datum').value = data.datum;
+          // Nastav kalendár na správny mesiac
+          var parts = data.datum.split('-');
+          currentMonth = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
+          renderCalendar();
         }
       } catch(e) {}
     }
 
     // ===== SLOTY =====
-    document.getElementById('datum').addEventListener('change', function() {
-      if (selectedServices.length > 0) {
-        nacitajSloty();
-      }
-    });
-
     async function nacitajSloty() {
       var datum = document.getElementById('datum').value;
       var casSelect = document.getElementById('cas');
@@ -321,6 +430,8 @@
     // ===== INIT =====
     loadServices();
     loadNextSlot();
+    loadAvailableDays();
+    renderCalendar();
   </script>
 </body>
 </html>
