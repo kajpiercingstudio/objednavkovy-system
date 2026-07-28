@@ -3,55 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>Kaj Piercing Studio — Objednávka</title>
+  <title>Kaj Piercing Studio — Rezervácia</title>
   <style>
     * { box-sizing: border-box; }
     html, body { width: 100%; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; max-width: 540px; margin: 0 auto; padding: 20px; color: #333; background: #fafafa; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; max-width: 540px; margin: 0 auto; padding: 20px; background: #fafafa; color: #333; }
+    
     h1 { font-size: 1.5em; text-align: center; margin-bottom: 5px; }
-    .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 20px; }
-
+    .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 25px; }
+    
     /* Najbližší termín */
-    #next-slot { background: #fff3e0; border: 1px solid #ffb74d; border-radius: 10px; padding: 14px; margin-bottom: 24px; cursor: pointer; text-align: center; }
+    #next-slot { background: #fff3e0; border: 1px solid #ffb74d; border-radius: 12px; padding: 14px 18px; margin-bottom: 25px; cursor: pointer; transition: background 0.2s; }
     #next-slot:hover { background: #ffe0b2; }
-    #next-slot .label { font-size: 13px; color: #666; }
-    #next-slot .value { font-size: 18px; font-weight: bold; color: #e65100; margin-top: 4px; }
+    #next-slot .label { font-size: 13px; color: #666; margin-bottom: 4px; }
+    #next-slot .value { font-size: 17px; font-weight: bold; color: #e65100; }
     #next-slot .hint { font-size: 12px; color: #999; margin-top: 4px; }
-
+    
     /* Služby */
-    .section-title { font-size: 1.1em; font-weight: bold; margin: 20px 0 10px; }
-    .search-box { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; margin-bottom: 12px; }
-    .service-card { display: flex; align-items: center; border: 2px solid #eee; border-radius: 10px; padding: 10px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
-    .service-card:hover { border-color: #ccc; }
-    .service-card.selected { border-color: #e91e63; background: #fce4ec; }
-    .service-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; margin-right: 12px; flex-shrink: 0; }
+    .section-label { font-weight: bold; font-size: 15px; margin-top: 20px; margin-bottom: 10px; }
+    .search-box { width: 100%; padding: 10px 14px; font-size: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; }
+    
+    .service-card { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 12px; padding: 10px; margin-bottom: 10px; background: white; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
+    .service-card.selected { border-color: #e91e63; box-shadow: 0 0 0 2px rgba(233,30,99,0.2); }
+    .service-card img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; margin-right: 12px; flex-shrink: 0; }
     .service-info { flex: 1; }
     .service-name { font-weight: bold; font-size: 15px; }
-    .service-meta { font-size: 13px; color: #777; margin-top: 3px; }
-    .service-toggle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #999; flex-shrink: 0; }
-    .service-card.selected .service-toggle { border-color: #e91e63; color: #e91e63; background: #fff; }
-
-    /* Výber trvania info */
-    #trvanie-info { background: #e3f2fd; border-radius: 8px; padding: 10px; font-size: 13px; color: #1565c0; margin-bottom: 15px; display: none; }
-
+    .service-meta { font-size: 13px; color: #888; margin-top: 3px; }
+    .service-toggle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #ddd; flex-shrink: 0; transition: all 0.2s; }
+    .service-card.selected .service-toggle { border-color: #e91e63; color: #e91e63; background: #fce4ec; }
+    
     /* Formulár */
-    label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; }
-    input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; }
+    label { display: block; margin-top: 18px; font-weight: bold; font-size: 14px; }
+    input, select, textarea { width: 100%; padding: 12px; margin-top: 6px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; background: white; }
     select:disabled { background: #f5f5f5; color: #999; }
-    button { margin-top: 20px; padding: 15px; width: 100%; background: #e91e63; color: white; border: none; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-    button:disabled { background: #ccc; }
-    #result { margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px; display: none; text-align: center; }
-    #error { margin-top: 10px; padding: 10px; background: #ffebee; color: #c62828; border-radius: 8px; display: none; }
-    #cas-info { margin-top: 5px; color: #666; font-size: 13px; }
+    
+    button.submit { margin-top: 22px; padding: 16px; width: 100%; background: #e91e63; color: white; border: none; font-size: 16px; font-weight: bold; border-radius: 10px; cursor: pointer; transition: background 0.2s; }
+    button.submit:hover { background: #c2185b; }
+    button.submit:disabled { background: #ccc; cursor: not-allowed; }
+    
+    #result { margin-top: 20px; padding: 16px; background: #e8f5e9; border-radius: 10px; display: none; text-align: center; font-weight: bold; }
+    #error { margin-top: 12px; padding: 12px; background: #ffebee; color: #c62828; border-radius: 8px; display: none; font-size: 14px; }
+    #cas-info { margin-top: 6px; color: #666; font-size: 13px; }
     .hidden { display: none; }
+    
     .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #999; }
     .footer a { color: #999; }
+    
+    .duration-info { margin-top: 8px; padding: 8px 12px; background: #f3e5f5; border-radius: 8px; font-size: 13px; color: #6a1b9a; display: none; }
   </style>
 </head>
 <body>
-
   <h1>Kaj Piercing Studio</h1>
-  <p class="subtitle">Objednávka termínu</p>
+  <p class="subtitle">Rezervácia termínu</p>
 
   <!-- Najbližší termín -->
   <div id="next-slot" style="display:none;" onclick="selectNextSlot()">
@@ -61,172 +64,176 @@
   </div>
 
   <!-- Služby -->
-  <div class="section-title">Vybrať službu</div>
+  <div class="section-label">Vybrať službu</div>
   <input type="text" class="search-box" id="search" placeholder="Hľadať..." oninput="filterServices()">
   <div id="services-list"></div>
-  <div id="trvanie-info"></div>
+  <div class="duration-info" id="duration-info"></div>
 
-  <!-- Dátum a čas -->
-  <div id="datetime-section" class="hidden">
-    <label>Dátum</label>
-    <input type="date" id="datum" required>
+  <!-- Dátum -->
+  <label>Dátum</label>
+  <input type="date" id="datum">
 
-    <label>Čas</label>
-    <select id="cas" disabled>
-      <option value="">— najprv vyberte dátum —</option>
-    </select>
-    <div id="cas-info"></div>
-  </div>
+  <!-- Čas -->
+  <label>Čas</label>
+  <select id="cas" disabled>
+    <option value="">— najprv vyberte dátum —</option>
+  </select>
+  <div id="cas-info"></div>
 
   <!-- Kontakt -->
   <div id="kontakt-section" class="hidden">
     <label>Meno</label>
-    <input type="text" id="meno" name="name" autocomplete="name" required>
+    <input type="text" id="meno" name="name" autocomplete="name">
 
     <label>Email</label>
-    <input type="email" id="email" name="email" autocomplete="email" required>
+    <input type="email" id="email" name="email" autocomplete="email">
 
     <label>Telefón</label>
-    <input type="tel" id="telefon" name="tel" autocomplete="tel" required>
+    <input type="tel" id="telefon" name="tel" autocomplete="tel">
 
     <label>Poznámka (nepovinné)</label>
     <textarea id="poznamka" rows="3" placeholder="Napr. mám alergiu na nikel, chcem konkrétny šperk..."></textarea>
 
     <div id="error"></div>
 
-    <button id="btn" onclick="odoslat()">Odoslať žiadosť</button>
+    <button class="submit" id="btn" onclick="odoslat()">Odoslať žiadosť</button>
   </div>
 
   <div id="result"></div>
 
-  <div class="footer">
-    <a href="TVOJA_APPS_SCRIPT_URL?page=gdpr" target="_blank">Zásady ochrany osobných údajov</a>
-  </div>
+  <p class="footer">
+    <a href="https://script.google.com/macros/s/AKfycbwXaWGf2suYDYzlsn5hB9SWOYyCZ1XjDaYBP6ZkKviFFWbyp5rw48NLmCT-sBr0mEai/exec?page=gdpr" target="_blank">Zásady ochrany osobných údajov</a>
+  </p>
 
-<script>
-  // ===== KONFIGURÁCIA =====
-  var API_URL = 'TVOJA_APPS_SCRIPT_URL';
+  <script>
+    var API_URL = 'https://script.google.com/macros/s/AKfycbwXaWGf2suYDYzlsn5hB9SWOYyCZ1XjDaYBP6ZkKviFFWbyp5rw48NLmCT-sBr0mEai/exec';
+    var allServices = [];
+    var selectedServices = [];
+    var nextSlotData = null;
 
-  // ===== STAV =====
-  var allServices = [];
-  var selectedServices = [];
-  var nextSlotData = null;
-
-  // ===== NAČÍTANIE SLUŽIEB =====
-  fetch(API_URL + '?action=getServices')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      allServices = data.services;
-      renderServices(allServices);
-    });
-
-  // ===== NAČÍTANIE NAJBLIŽŠIEHO TERMÍNU =====
-  fetch(API_URL + '?action=getNextSlot')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.found) {
-        nextSlotData = data;
-        document.getElementById('next-slot-value').textContent = data.datumFormatted + ' o ' + data.cas;
-        document.getElementById('next-slot').style.display = 'block';
+    // ===== NAČÍTANIE SLUŽIEB =====
+    async function loadServices() {
+      try {
+        var res = await fetch(API_URL + '?action=getServices');
+        var data = await res.json();
+        allServices = data.services;
+        renderServices(allServices);
+      } catch(e) {
+        document.getElementById('services-list').innerHTML = '<p style="color:#999;">Chyba pri načítaní služieb.</p>';
       }
-    });
-
-  function selectNextSlot() {
-    if (!nextSlotData) return;
-    document.getElementById('datum').value = nextSlotData.datum;
-    nacitajSloty();
-  }
-
-  // ===== SLUŽBY =====
-  function renderServices(services) {
-    var html = '';
-    services.forEach(function(s) {
-      var isSelected = selectedServices.indexOf(s.nazov) !== -1;
-      var imgUrl = s.obrazokId ? 'https://lh3.googleusercontent.com/d/' + s.obrazokId + '=s150' : '';
-      html += '<div class="service-card' + (isSelected ? ' selected' : '') + '" onclick="toggleService(\'' + s.nazov + '\')">';
-      if (imgUrl) html += '<img class="service-img" src="' + imgUrl + '" alt="' + s.nazov + '">';
-      html += '<div class="service-info"><div class="service-name">' + s.nazov + ' — ' + s.cena + '€</div>';
-      html += '<div class="service-meta">' + s.trvanie + ' min</div></div>';
-      html += '<div class="service-toggle">' + (isSelected ? '✓' : '+') + '</div>';
-      html += '</div>';
-    });
-    document.getElementById('services-list').innerHTML = html;
-  }
-
-  function toggleService(nazov) {
-    var idx = selectedServices.indexOf(nazov);
-    if (idx === -1) {
-      selectedServices.push(nazov);
-    } else {
-      selectedServices.splice(idx, 1);
     }
-    renderServices(allServices.filter(filterFn));
-    updateTrvanie();
-  }
 
-  function filterServices() {
-    var q = document.getElementById('search').value.toLowerCase();
-    var filtered = allServices.filter(function(s) {
-      return s.nazov.toLowerCase().indexOf(q) !== -1;
-    });
-    renderServices(filtered);
-  }
-
-  var filterFn = function(s) {
-    var q = document.getElementById('search').value.toLowerCase();
-    return s.nazov.toLowerCase().indexOf(q) !== -1;
-  };
-
-  // ===== TRVANIE =====
-  function getTrvanie() {
-    if (selectedServices.length === 0) return 30;
-    var total = 30; // Prvá služba = vždy 30 min
-    for (var i = 1; i < selectedServices.length; i++) {
-      var svc = allServices.find(function(s) { return s.nazov === selectedServices[i]; });
-      if (svc) total += svc.trvanie;
+    function renderServices(services) {
+      var html = '';
+      services.forEach(function(s) {
+        var isSelected = selectedServices.indexOf(s.nazov) > -1;
+        var imgUrl = 'https://drive.google.com/thumbnail?id=' + s.obrazokId + '&sz=w200';
+        html += '<div class="service-card' + (isSelected ? ' selected' : '') + '" onclick="toggleService(\'' + s.nazov + '\')">';
+        html += '<img src="' + imgUrl + '" alt="' + s.nazov + '">';
+        html += '<div class="service-info"><div class="service-name">' + s.nazov + ' — ' + s.cena + '€</div>';
+        html += '<div class="service-meta">' + s.trvanie + ' min</div></div>';
+        html += '<div class="service-toggle">' + (isSelected ? '✓' : '+') + '</div>';
+        html += '</div>';
+      });
+      document.getElementById('services-list').innerHTML = html;
     }
-    return total;
-  }
 
-  function updateTrvanie() {
-    var info = document.getElementById('trvanie-info');
-    var datetimeSection = document.getElementById('datetime-section');
-    
-    if (selectedServices.length > 0) {
+    function toggleService(nazov) {
+      var idx = selectedServices.indexOf(nazov);
+      if (idx > -1) {
+        selectedServices.splice(idx, 1);
+      } else {
+        selectedServices.push(nazov);
+      }
+      renderServices(filterBySearch());
+      updateDuration();
+      nacitajSloty();
+    }
+
+    function filterServices() {
+      renderServices(filterBySearch());
+    }
+
+    function filterBySearch() {
+      var query = document.getElementById('search').value.toLowerCase();
+      if (!query) return allServices;
+      return allServices.filter(function(s) { return s.nazov.toLowerCase().indexOf(query) > -1; });
+    }
+
+    // ===== TRVANIE =====
+    function getTrvanie() {
+      if (selectedServices.length === 0) return 30;
+      var total = 0;
+      var isFirst = true;
+      for (var i = 0; i < selectedServices.length; i++) {
+        var service = allServices.find(function(s) { return s.nazov === selectedServices[i]; });
+        if (service) {
+          if (isFirst) {
+            total += 30; // prvá služba vždy 30 min
+            isFirst = false;
+          } else {
+            total += service.trvanie;
+          }
+        }
+      }
+      return total;
+    }
+
+    function updateDuration() {
+      var info = document.getElementById('duration-info');
+      if (selectedServices.length > 0) {
+        info.style.display = 'block';
+        info.textContent = 'Celkový čas: ' + getTrvanie() + ' min | Vybrané: ' + selectedServices.length + ' ' + (selectedServices.length === 1 ? 'služba' : 'služby');
+      } else {
+        info.style.display = 'none';
+      }
+    }
+
+    // ===== NAJBLIŽŠÍ TERMÍN =====
+    async function loadNextSlot() {
+      try {
+        var res = await fetch(API_URL + '?action=getNextSlot');
+        var data = await res.json();
+        if (data.found) {
+          nextSlotData = data;
+          document.getElementById('next-slot-value').textContent = data.datumFormatted + ' o ' + data.cas;
+          document.getElementById('next-slot').style.display = 'block';
+        }
+      } catch(e) {}
+    }
+
+    function selectNextSlot() {
+      if (!nextSlotData) return;
+      document.getElementById('datum').value = nextSlotData.datum;
+      nacitajSloty();
+    }
+
+    // ===== SLOTY =====
+    document.getElementById('datum').addEventListener('change', nacitajSloty);
+
+    async function nacitajSloty() {
+      var datum = document.getElementById('datum').value;
+      var casSelect = document.getElementById('cas');
+      var casInfo = document.getElementById('cas-info');
+      var kontakt = document.getElementById('kontakt-section');
+
+      if (!datum) return;
+      if (selectedServices.length === 0) {
+        casInfo.textContent = 'Najprv vyberte aspoň jednu službu.';
+        return;
+      }
+
+      casSelect.disabled = true;
+      casSelect.innerHTML = '<option value="">Načítavam...</option>';
+      casInfo.textContent = '';
+      kontakt.classList.add('hidden');
+
       var trvanie = getTrvanie();
-      info.textContent = 'Vybrané: ' + selectedServices.length + ' služb' + (selectedServices.length === 1 ? 'a' : 'y') + ' — celkovo ' + trvanie + ' min';
-      info.style.display = 'block';
-      datetimeSection.classList.remove('hidden');
-      // Ak je dátum už vybraný, reload sloty
-      if (document.getElementById('datum').value) nacitajSloty();
-    } else {
-      info.style.display = 'none';
-      datetimeSection.classList.add('hidden');
-      document.getElementById('kontakt-section').classList.add('hidden');
-    }
-  }
 
-  // ===== SLOTY =====
-  document.getElementById('datum').addEventListener('change', nacitajSloty);
-
-  function nacitajSloty() {
-    var datum = document.getElementById('datum').value;
-    var casSelect = document.getElementById('cas');
-    var casInfo = document.getElementById('cas-info');
-    var kontakt = document.getElementById('kontakt-section');
-
-    if (!datum) return;
-
-    casSelect.disabled = true;
-    casSelect.innerHTML = '<option value="">Načítavam...</option>';
-    casInfo.textContent = '';
-    kontakt.classList.add('hidden');
-
-    var trvanie = getTrvanie();
-
-    fetch(API_URL + '?action=getSlots&datum=' + datum + '&trvanie=' + trvanie)
-      .then(function(r) { return r.json(); })
-      .then(function(response) {
+      try {
+        var res = await fetch(API_URL + '?action=getSlots&datum=' + datum + '&trvanie=' + trvanie);
+        var response = await res.json();
+        
         casSelect.innerHTML = '';
         
         if (response.slots && response.slots.length > 0) {
@@ -242,20 +249,79 @@
           casSelect.innerHTML = '<option value="">Žiadne voľné termíny</option>';
           casInfo.textContent = response.message || 'Vyberte iný deň alebo ma kontaktujte cez správu.';
         }
-      })
-      .catch(function() {
+      } catch(e) {
         casSelect.innerHTML = '<option value="">Chyba pri načítaní</option>';
         casInfo.textContent = 'Skúste to znova neskôr.';
-      });
-  }
+      }
+    }
 
-  // ===== ODOSLANIE =====
-  function odoslat() {
-    var errorDiv = document.getElementById('error');
-    errorDiv.style.display = 'none';
+    // ===== ODOSLANIE =====
+    async function odoslat() {
+      var errorDiv = document.getElementById('error');
+      errorDiv.style.display = 'none';
 
-    var meno = document.getElementById('meno').value.trim();
-    var email = document.getElementById('email').value.trim();
-    var telefon = document.getElementById('telefon').value.trim();
-    var cas = document.getElementById('cas').value;
-    var datum = document.getElementById
+      var meno = document.getElementById('meno').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var telefon = document.getElementById('telefon').value.trim();
+      var cas = document.getElementById('cas').value;
+      var datum = document.getElementById('datum').value;
+
+      if (selectedServices.length === 0) { showError('Vyberte aspoň jednu službu.'); return; }
+      if (!datum || !cas) { showError('Vyberte dátum a čas.'); return; }
+      if (!meno) { showError('Zadajte meno.'); return; }
+      if (!email) { showError('Zadajte email.'); return; }
+      if (!telefon) { showError('Zadajte telefónne číslo.'); return; }
+
+      var btn = document.getElementById('btn');
+      btn.disabled = true;
+      btn.textContent = 'Odosielam...';
+
+      var data = {
+        action: 'submitBooking',
+        datum: datum,
+        cas: cas,
+        trvanie: getTrvanie(),
+        meno: meno,
+        email: email,
+        telefon: telefon,
+        sluzby: selectedServices.join(', '),
+        poznamka: document.getElementById('poznamka').value
+      };
+
+      try {
+        var res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(data)
+        });
+        var response = await res.json();
+        
+        if (response.success) {
+          document.getElementById('result').style.display = 'block';
+          document.getElementById('result').textContent = '✓ ' + response.message;
+          btn.textContent = 'Odoslané ✓';
+          document.getElementById('cas').disabled = true;
+          document.getElementById('kontakt-section').classList.add('hidden');
+        } else {
+          showError(response.message);
+          btn.disabled = false;
+          btn.textContent = 'Odoslať žiadosť';
+        }
+      } catch(e) {
+        showError('Nastala chyba, skúste to znova.');
+        btn.disabled = false;
+        btn.textContent = 'Odoslať žiadosť';
+      }
+    }
+
+    function showError(msg) {
+      var errorDiv = document.getElementById('error');
+      errorDiv.textContent = msg;
+      errorDiv.style.display = 'block';
+    }
+
+    // ===== INIT =====
+    loadServices();
+    loadNextSlot();
+  </script>
+</body>
+</html>
