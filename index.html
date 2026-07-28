@@ -70,7 +70,7 @@
   <!-- Čas -->
   <label>Čas</label>
   <select id="cas" disabled>
-    <option value="">— najprv vyberte dátum —</option>
+    <option value="">— najprv vyberte službu a dátum —</option>
   </select>
   <div id="cas-info"></div>
 
@@ -142,7 +142,7 @@
       renderServices(filterBySearch());
       updateDuration();
       // Ak je dátum predvyplnený, načítaj sloty
-      if (document.getElementById('datum').value) {
+      if (document.getElementById('datum').value && selectedServices.length > 0) {
         nacitajSloty();
       }
     }
@@ -166,7 +166,7 @@
         var service = allServices.find(function(s) { return s.nazov === selectedServices[i]; });
         if (service) {
           if (isFirst) {
-            total += 30; // prvá služba vždy 30 min
+            total += 30;
             isFirst = false;
           } else {
             total += service.trvanie;
@@ -195,14 +195,18 @@
           nextSlotData = data;
           document.getElementById('next-slot-value').textContent = data.datumFormatted + ' o ' + data.cas;
           document.getElementById('next-slot').style.display = 'block';
-          // Automaticky predvyplň dátum
+          // Predvyplň dátum
           document.getElementById('datum').value = data.datum;
         }
       } catch(e) {}
     }
 
     // ===== SLOTY =====
-    document.getElementById('datum').addEventListener('change', nacitajSloty);
+    document.getElementById('datum').addEventListener('change', function() {
+      if (selectedServices.length > 0) {
+        nacitajSloty();
+      }
+    });
 
     async function nacitajSloty() {
       var datum = document.getElementById('datum').value;
@@ -309,4 +313,12 @@
     function showError(msg) {
       var errorDiv = document.getElementById('error');
       errorDiv.textContent = msg;
-      errorDiv
+      errorDiv.style.display = 'block';
+    }
+
+    // ===== INIT =====
+    loadServices();
+    loadNextSlot();
+  </script>
+</body>
+</html>
