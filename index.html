@@ -57,7 +57,7 @@
     .calendar-day { padding: 8px 4px; border-radius: 8px; font-size: 14px; cursor: default; color: #ccc; }
     .calendar-day.available { background: #e8f5e9; color: #2e7d32; font-weight: bold; cursor: pointer; }
     .calendar-day.available:hover { background: #c8e6c9; }
-    .calendar-day.selected { background: #e91e63; color: white; font-weight: bold; }
+    .calendar-day.selected { background: #ffff00; color: white; font-weight: bold; }
     .calendar-day.today { border: 2px solid #ff9800; }
     .calendar-day.past { color: #e0e0e0; }
     .calendar-loading { text-align: center; padding: 20px; color: #999; font-size: 13px; }
@@ -192,6 +192,7 @@
 
     function changeMonth(dir) {
       currentMonth.setMonth(currentMonth.getMonth() + dir);
+      availableDays = [];
       renderCalendar();
       loadAvailableDays();
     }
@@ -199,15 +200,17 @@
     async function loadAvailableDays() {
       var monthStr = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
       
+      // Zobraz loading
+      document.getElementById('calendar-grid').innerHTML += '<div class="calendar-loading">Načítavam...</div>';
+      
       try {
         var res = await fetch(API_URL + '?action=getAvailableDays&month=' + monthStr);
         var data = await res.json();
         availableDays = data.days || [];
-        renderCalendar();
       } catch(e) {
         availableDays = [];
-        renderCalendar();
       }
+      renderCalendar();
     }
 
     function selectDate(dateStr) {
