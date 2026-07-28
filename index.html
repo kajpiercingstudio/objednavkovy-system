@@ -60,7 +60,8 @@
     .calendar-day.selected { background: #fce4ec; color: #c2185b; font-weight: bold; border: 2px solid #e91e63; }
     .calendar-day.today { border: 2px solid #ff9800; }
     .calendar-day.past { color: #e0e0e0; }
-    .calendar-loading { grid-column: 1 / -1; text-align: center; padding: 10px; color: #999; font-size: 24px; display: inline-block; animation: spin 1s linear infinite; }
+    .calendar { position: relative; }
+    .calendar-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 36px; color: #e91e63; animation: spin 1s linear infinite; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
@@ -201,8 +202,11 @@
     async function loadAvailableDays() {
       var monthStr = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
       
-      // Zobraz loading
-      document.getElementById('calendar-grid').innerHTML += '<div class="calendar-loading">⟳</div>';
+      // Zobraz loading overlay
+      var spinner = document.createElement('div');
+      spinner.className = 'calendar-loading';
+      spinner.textContent = '⟳';
+      document.getElementById('calendar').appendChild(spinner);
       
       try {
         var res = await fetch(API_URL + '?action=getAvailableDays&month=' + monthStr);
@@ -211,9 +215,13 @@
       } catch(e) {
         availableDays = [];
       }
+      
+      // Odstráň spinner a prerenderuj
+      var existing = document.querySelector('.calendar-loading');
+      if (existing) existing.remove();
       renderCalendar();
     }
-
+    
     function selectDate(dateStr) {
       selectedDate = dateStr;
       document.getElementById('datum').value = dateStr;
