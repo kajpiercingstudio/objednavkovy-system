@@ -49,8 +49,8 @@
     /* Kalendár */
     .calendar { background: white; border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-top: 6px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .calendar-header button { background: none; border: none; font-size: 20px; cursor: pointer; padding: 5px 10px; border-radius: 5px; color: #555; }
-    .calendar-header button:hover { background: #f0f0f0; }
+    .calendar-header button { background: none; border: none; font-size: 40px; cursor: pointer; padding: 5px 15px; border-radius: 5px; color: #333; opacity: 0.4; font-weight: bold; }
+    .calendar-header button:hover { opacity: 0.8; background: #f0f0f0; }
     .calendar-title { font-weight: bold; font-size: 15px; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
     .calendar-day-name { font-size: 11px; color: #999; font-weight: bold; padding: 4px 0; }
@@ -91,6 +91,7 @@
       <button onclick="changeMonth(1)">›</button>
     </div>
     <div class="calendar-grid" id="calendar-grid"></div>
+    <div class="calendar-loading" id="init-spinner">⟳</div>
   </div>
   <input type="hidden" id="datum">
 
@@ -195,6 +196,12 @@
     function changeMonth(dir) {
       currentMonth.setMonth(currentMonth.getMonth() + dir);
       availableDays = [];
+      selectedDate = null;
+      document.getElementById('datum').value = '';
+      document.getElementById('cas').disabled = true;
+      document.getElementById('cas').innerHTML = '<option value="">— najprv vyberte službu a dátum —</option>';
+      document.getElementById('cas-info').textContent = '';
+      document.getElementById('kontakt-section').classList.add('hidden');
       renderCalendar();
       loadAvailableDays();
     }
