@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <style>
+    html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; line-height: 1.6; color: #333; }
+    h1 { font-size: 1.4em; }
+    h2 { font-size: 1.1em; margin-top: 25px; color: #555; }
+    hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 5px; }
+    .footer { margin-top: 40px; font-size: 12px; color: #999; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>Zásady ochrany osobných údajov</h1>
+
+  <h2>Prevádzkovateľ</h2>
+  <p><strong>An.Ka Sweet Home s. r. o.</strong><br>
+  K Železnej studienke 7599/28, 811 04 Bratislava<br>
+  IČO: 53 175 697</p>
+
+  <hr>
+
+  <h2>Aké údaje spracúvame</h2>
+  <p>Pri vytvorení objednávky termínu zhromažďujeme:</p>
+  <ul>
+    <li>meno,</li>
+    <li>e-mailovú adresu,</li>
+    <li>telefónne číslo,</li>
+    <li>zvolené služby,</li>
+    <li>prípadnú poznámku.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Účel spracovania</h2>
+  <p>Osobné údaje spracúvame výlučne na účely:</p>
+  <ul>
+    <li>potvrdenia, zmeny alebo zrušenia objednaného termínu,</li>
+    <li>komunikácie súvisiacej s objednávkou (potvrdenie, pripomienka, zrušenie).</li>
+  </ul>
+
+  <hr>
+
+  <h2>Právny základ</h2>
+  <p>Spracúvanie je založené na <strong>súhlase dotknutej osoby</strong> (čl. 6 ods. 1 písm. a) GDPR), ktorý udeľujete odoslaním objednávkového formulára.</p>
+
+  <hr>
+
+  <h2>Doba uchovávania</h2>
+  <p>Osobné údaje uchovávame po dobu <strong>6 mesiacov</strong> od dátumu objednaného termínu. Po uplynutí tejto doby sú údaje vymazané.</p>
+
+  <hr>
+
+  <h2>Poskytovanie údajov tretím stranám</h2>
+  <p>Vaše osobné údaje <strong>neposkytujeme žiadnym tretím stranám</strong>.</p>
+  <p>Na technické zabezpečenie služby využívame infraštruktúru spoločnosti Google (Google Sheets, Gmail) a GitHub (hosting webovej stránky), pričom údaje sú spracúvané v súlade s podmienkami týchto poskytovateľov a nariadením GDPR.</p>
+  <hr>
+
+  <h2>Vaše práva</h2>
+  <p>Máte právo:</p>
+  <ul>
+    <li>požiadať o prístup k svojim osobným údajom,</li>
+    <li>požiadať o opravu nesprávnych údajov,</li>
+    <li>požiadať o vymazanie údajov (právo na zabudnutie),</li>
+    <li>odvolať súhlas so spracúvaním kedykoľvek.</li>
+  </ul>
+  <p>Pre uplatnenie týchto práv nás kontaktujte prostredníctvom správy na sociálnych sieťach (Instagram, Facebook) alebo e-mailom.</p>
+
+  <div class="footer">Platné od júla 2026</div>
+</body>
+</html>
