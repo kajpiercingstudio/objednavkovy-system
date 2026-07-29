@@ -230,18 +230,13 @@
       } catch(e) {
         availableDays = [];
       }
-
-      var existing = document.querySelector('.calendar-loading');
-      if (existing) existing.remove();
-      renderCalendar();
-    }
-    
     // Odstráň spinner a prerenderuj
       var existing = document.querySelector('.calendar-loading');
       if (existing) existing.remove();
       renderCalendar();
     }
     
+
     function selectDate(dateStr) {
       selectedDate = dateStr;
       document.getElementById('datum').value = dateStr;
