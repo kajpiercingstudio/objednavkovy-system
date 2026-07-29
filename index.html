@@ -239,47 +239,6 @@
     }
 
     // ===== NAČÍTANIE SLUŽIEB =====
-
-    async function init() {
-      var month = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
-      try {
-        var res = await fetch(API_URL + '?action=init&month=' + month);
-        var data = await res.json();
-        
-        allServices = data.services;
-        renderServices(allServices);
-        
-        if (data.nextSlot.found) {
-          nextSlotData = data.nextSlot;
-          document.getElementById('next-slot-value').textContent = data.nextSlot.datumFormatted + ' o ' + data.nextSlot.cas;
-          document.getElementById('next-slot').style.display = 'block';
-          selectedDate = data.nextSlot.datum;
-          document.getElementById('datum').value = data.nextSlot.datum;
-          var parts = data.nextSlot.datum.split('-');
-          currentMonth = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
-        }
-        
-        availableDays = data.availableDays || [];
-        renderCalendar();
-      } catch(e) {
-        document.getElementById('services-list').innerHTML = '<p style="color:#999;">Chyba pri načítaní.</p>';
-      }
-      // Odstráň init spinner
-      var initSpinner = document.getElementById('init-spinner');
-      if (initSpinner) initSpinner.remove();
-    }
-    
-    async function loadServices() {
-      try {
-        var res = await fetch(API_URL + '?action=getServices');
-        var data = await res.json();
-        allServices = data.services;
-        renderServices(allServices);
-      } catch(e) {
-        document.getElementById('services-list').innerHTML = '<p style="color:#999;">Chyba pri načítaní služieb.</p>';
-      }
-    }
-
     function renderServices(services) {
       var html = '';
       services.forEach(function(s) {
@@ -478,11 +437,51 @@
     }
 
     // ===== INIT =====
-    //loadServices();
-    //loadNextSlot();
-    //loadAvailableDays();
-    init();
+    
+    // Krok 1: Načítaj služby (rýchle, zobrazí sa hneď)
+    async function loadServicesFirst() {
+      try {
+        var res = await fetch(API_URL + '?action=getServices');
+        var data = await res.json();
+        allServices = data.services;
+        renderServices(allServices);
+      } catch(e) {
+        document.getElementById('services-list').innerHTML = '<p style="color:#999;">Chyba pri načítaní služieb.</p>';
+      }
+    }
+
+    // Krok 2: Načítaj kalendárové dáta (pomalšie, na pozadí)
+    async function loadCalendarData() {
+      var month = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
+      try {
+        var res = await fetch(API_URL + '?action=getCalendarData&month=' + month);
+        var data = await res.json();
+
+        if (data.nextSlot && data.nextSlot.found) {
+          nextSlotData = data.nextSlot;
+          document.getElementById('next-slot-value').textContent = data.nextSlot.datumFormatted + ' o ' + data.nextSlot.cas;
+          document.getElementById('next-slot').style.display = 'block';
+          selectedDate = data.nextSlot.datum;
+          document.getElementById('datum').value = data.nextSlot.datum;
+          var parts = data.nextSlot.datum.split('-');
+          currentMonth = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
+        }
+
+        availableDays = data.availableDays || [];
+        renderCalendar();
+      } catch(e) {
+        renderCalendar();
+      }
+
+      // Odstráň init spinner
+      var initSpinner = document.getElementById('init-spinner');
+      if (initSpinner) initSpinner.remove();
+    }
+
+    // Spusti oboje paralelne
     renderCalendar();
+    loadServicesFirst();
+    loadCalendarData();
   </script>
 </body>
 </html>
