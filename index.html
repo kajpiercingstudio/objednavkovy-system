@@ -196,7 +196,9 @@
       document.getElementById('calendar-grid').innerHTML = html;
     }
 
-    function changeMonth(dir) {
+
+    
+        function changeMonth(dir) {
       currentMonth.setMonth(currentMonth.getMonth() + dir);
       availableDays = [];
       selectedDate = null;
@@ -206,27 +208,37 @@
       document.getElementById('cas-info').textContent = '';
       document.getElementById('kontakt-section').classList.add('hidden');
       renderCalendar();
-      loadAvailableDays();
+      loadCalendarDataForMonth();
     }
 
-    async function loadAvailableDays() {
+    async function loadCalendarDataForMonth() {
       var monthStr = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
-      
-      // Zobraz loading overlay
+
       var spinner = document.createElement('div');
       spinner.className = 'calendar-loading';
       spinner.textContent = '⟳';
       document.getElementById('calendar').appendChild(spinner);
-      
+
       try {
-        var res = await fetch(API_URL + '?action=getAvailableDays&month=' + monthStr);
+        var res = await fetch(API_URL + '?action=getCalendarData&month=' + monthStr);
         var data = await res.json();
-        availableDays = data.days || [];
+        availableDays = data.availableDays || [];
+        // Pridaj nové sloty do cache (nemaže staré)
+        var newSlots = data.slotsByDay || {};
+        for (var key in newSlots) {
+          cachedSlotsByDay[key] = newSlots[key];
+        }
       } catch(e) {
         availableDays = [];
       }
-      
-      // Odstráň spinner a prerenderuj
+
+      var existing = document.querySelector('.calendar-loading');
+      if (existing) existing.remove();
+      renderCalendar();
+    }
+    
+    
+    // Odstráň spinner a prerenderuj
       var existing = document.querySelector('.calendar-loading');
       if (existing) existing.remove();
       renderCalendar();
