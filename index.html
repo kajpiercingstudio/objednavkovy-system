@@ -197,8 +197,7 @@
     }
 
 
-    
-        function changeMonth(dir) {
+    function changeMonth(dir) {
       currentMonth.setMonth(currentMonth.getMonth() + dir);
       availableDays = [];
       selectedDate = null;
@@ -236,7 +235,6 @@
       if (existing) existing.remove();
       renderCalendar();
     }
-    
     
     // Odstráň spinner a prerenderuj
       var existing = document.querySelector('.calendar-loading');
