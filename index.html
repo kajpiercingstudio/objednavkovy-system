@@ -134,7 +134,8 @@
     var allServices = [];
     var selectedServices = [];
     var nextSlotData = null;
-
+    var cachedSlotsByDay = {};
+    
     // ===== KALENDÁR =====
     var currentMonth = new Date();
     currentMonth.setDate(1);
@@ -342,38 +343,53 @@
         return;
       }
 
+      var trvanie = getTrvanie();
+
+      // Ak je trvanie 30 min a máme cache → zobraz okamžite
+      if (trvanie <= 30 && cachedSlotsByDay[datum]) {
+        zobrazSloty({ slots: cachedSlotsByDay[datum] });
+        return;
+      }
+
+      // Inak zavolaj API
       casSelect.disabled = true;
       casSelect.innerHTML = '<option value="">Načítavam...</option>';
       casInfo.textContent = '';
       kontakt.classList.add('hidden');
 
-      var trvanie = getTrvanie();
-
       try {
         var res = await fetch(API_URL + '?action=getSlots&datum=' + datum + '&trvanie=' + trvanie);
         var response = await res.json();
-        
-        casSelect.innerHTML = '';
-        
-        if (response.slots && response.slots.length > 0) {
-          response.slots.forEach(function(slot) {
-            var opt = document.createElement('option');
-            opt.value = slot;
-            opt.textContent = slot;
-            casSelect.appendChild(opt);
-          });
-          casSelect.disabled = false;
-          kontakt.classList.remove('hidden');
-        } else {
-          casSelect.innerHTML = '<option value="">Žiadne voľné termíny</option>';
-          casInfo.textContent = response.message || 'Vyberte iný deň alebo ma kontaktujte cez správu.';
-        }
+        zobrazSloty(response);
       } catch(e) {
         casSelect.innerHTML = '<option value="">Chyba pri načítaní</option>';
         casInfo.textContent = 'Skúste to znova neskôr.';
       }
     }
 
+    function zobrazSloty(response) {
+      var casSelect = document.getElementById('cas');
+      var casInfo = document.getElementById('cas-info');
+      var kontakt = document.getElementById('kontakt-section');
+
+      casSelect.innerHTML = '';
+
+      if (response.slots && response.slots.length > 0) {
+        response.slots.forEach(function(slot) {
+          var opt = document.createElement('option');
+          opt.value = slot;
+          opt.textContent = slot;
+          casSelect.appendChild(opt);
+        });
+        casSelect.disabled = false;
+        kontakt.classList.remove('hidden');
+      } else {
+        casSelect.innerHTML = '<option value="">Žiadne voľné termíny</option>';
+        casInfo.textContent = response.message || 'Vyberte iný deň alebo ma kontaktujte cez správu.';
+      }
+    }
+
+    
     // ===== ODOSLANIE =====
     async function odoslat() {
       var errorDiv = document.getElementById('error');
@@ -466,8 +482,8 @@
           var parts = data.nextSlot.datum.split('-');
           currentMonth = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
         }
-
         availableDays = data.availableDays || [];
+        cachedSlotsByDay = data.slotsByDay || {};
       } catch(e) {
         availableDays = [];
       }
