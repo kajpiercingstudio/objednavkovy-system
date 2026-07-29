@@ -439,8 +439,7 @@
     }
 
     // ===== INIT =====
-    
-    // Krok 1: Načítaj služby (rýchle, zobrazí sa hneď)
+
     async function loadServicesFirst() {
       try {
         var res = await fetch(API_URL + '?action=getServices');
@@ -452,7 +451,6 @@
       }
     }
 
-    // Krok 2: Načítaj kalendárové dáta (pomalšie, na pozadí)
     async function loadCalendarData() {
       var month = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
       try {
@@ -470,20 +468,24 @@
         }
 
         availableDays = data.availableDays || [];
-        renderCalendar();
       } catch(e) {
-        renderCalendar();
+        availableDays = [];
       }
 
-      // Odstráň init spinner
+      // Odstráň spinner a zobraz kalendár
       var initSpinner = document.getElementById('init-spinner');
       if (initSpinner) initSpinner.remove();
+      renderCalendar();
     }
 
-    // Spusti oboje paralelne
-    loadServicesFirst();
-    loadCalendarData();
-    renderCalendar();
+    // Sériové spustenie: služby → kalendár → render
+    async function startApp() {
+      await loadServicesFirst();
+      await loadCalendarData();
+    }
+
+    startApp();
+    
   </script>
 </body>
 </html>
