@@ -479,7 +479,7 @@
       }
     }
 
-    async function loadCalendarData() {
+     async function loadCalendarData() {
       var month = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
       try {
         var res = await fetch(API_URL + '?action=getCalendarData&month=' + month);
@@ -492,20 +492,35 @@
           selectedDate = data.nextSlot.datum;
           document.getElementById('datum').value = data.nextSlot.datum;
           var parts = data.nextSlot.datum.split('-');
-          currentMonth = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
+          var nextSlotMonth = parseInt(parts[1]) - 1;
+          var nextSlotYear = parseInt(parts[0]);
+
+          // Ak nextSlot je v inom mesiaci, prepni a načítaj ten mesiac
+          if (nextSlotMonth !== currentMonth.getMonth() || nextSlotYear !== currentMonth.getFullYear()) {
+            currentMonth = new Date(nextSlotYear, nextSlotMonth, 1);
+            // Načítaj available days pre nový mesiac
+            var newMonth = currentMonth.getFullYear() + '-' + String(currentMonth.getMonth() + 1).padStart(2, '0');
+            var res2 = await fetch(API_URL + '?action=getCalendarData&month=' + newMonth);
+            var data2 = await res2.json();
+            availableDays = data2.availableDays || [];
+            cachedSlotsByDay = data2.slotsByDay || {};
+          } else {
+            availableDays = data.availableDays || [];
+            cachedSlotsByDay = data.slotsByDay || {};
+          }
+        } else {
+          availableDays = data.availableDays || [];
+          cachedSlotsByDay = data.slotsByDay || {};
         }
-        availableDays = data.availableDays || [];
-        cachedSlotsByDay = data.slotsByDay || {};
+
+        renderCalendar();
       } catch(e) {
-        availableDays = [];
+        renderCalendar();
       }
 
-      // Odstráň spinner a zobraz kalendár
       var initSpinner = document.getElementById('init-spinner');
       if (initSpinner) initSpinner.remove();
-      renderCalendar();
     }
-
     // Sériové spustenie: služby → kalendár → render
     async function startApp() {
       await loadServicesFirst();
